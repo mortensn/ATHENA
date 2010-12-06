@@ -270,8 +270,40 @@ public class RecordManager {
         }
 
         ticket.setType(type);
+
+        fireBeforeSaveCallbacks();
+
         ticket = apa.saveTicket(ticket);
         return ticket;
+    }
+
+    private void fireBeforeSaveCallbacks() {
+        System.out.println("####################################");
+        System.out.println("#");
+        System.out.println("#");
+        System.out.println("#");
+        System.out.println("#");
+        System.out.println("#");
+        System.out.println("#");
+        System.out.println("# Hello and welcome to annotations");
+        System.out.println("#");
+        System.out.println("#");
+        System.out.println("#");
+        System.out.println("#");
+        System.out.println("#");
+        System.out.println("#");
+        System.out.println("#");
+        System.out.println("#");
+        System.out.println("#");
+        System.out.println("#");
+        System.out.println("#");
+        System.out.println("#");
+        System.out.println("#");
+        System.out.println("#");
+        System.out.println("#");
+        System.out.println("#");
+        System.out.println("#");
+        System.out.println("####################################");
     }
 
     /**
