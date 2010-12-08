@@ -45,8 +45,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class RecordManager {
 
-    @Autowired
     ApaAdapter apa;
+    ArrayList<String> callbacks;
 
     public Ticket getTicket(String type, Object id) {
         return apa.getTicket(type, id);
@@ -278,14 +278,7 @@ public class RecordManager {
     }
 
     private void fireBeforeSaveCallbacks() {
-        System.out.println("####################################");
-        System.out.println("#");
-        System.out.println("#");
-        System.out.println("#");
-        System.out.println("#");
-        System.out.println("#");
-        System.out.println("#");
-        System.out.println("# Hello and welcome to annotations");
+        System.out.println("############################################");
         System.out.println("#");
         System.out.println("#");
         System.out.println("#");
@@ -297,13 +290,24 @@ public class RecordManager {
         System.out.println("#");
         System.out.println("#");
         System.out.println("#");
+
+        for(String callback : callbacks) {
+            System.out.println(callback);
+        }
+
         System.out.println("#");
         System.out.println("#");
         System.out.println("#");
         System.out.println("#");
         System.out.println("#");
         System.out.println("#");
-        System.out.println("####################################");
+        System.out.println("#");
+        System.out.println("#");
+        System.out.println("#");
+        System.out.println("#");
+        System.out.println("#");
+        System.out.println("#");
+        System.out.println("############################################");
     }
 
     /**
@@ -324,7 +328,19 @@ public class RecordManager {
         return apa;
     }
 
+    @Autowired
     public void setApa(ApaAdapter apa) {
         this.apa = apa;
     }
+
+    public ArrayList getCallbacks() {
+        return callbacks;
+    }
+
+    //Autowiring doens't work here for some reason
+    public void setCallbacks(ArrayList<String> callbacks) {
+        this.callbacks = callbacks;
+    }
+
+    
 }

@@ -58,6 +58,10 @@
         </dependency>
         <dependency>
             <groupId>org.fracturedatlas.athena</groupId>
+            <artifactId>callback</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.fracturedatlas.athena</groupId>
             <artifactId>apa</artifactId>
         </dependency>
 

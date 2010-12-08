@@ -20,7 +20,44 @@ along with this program.  If not, see <http://www.gnu.org/licenses/
 
 package org.fracturedatlas.athena.web.manager;
 
-public class BeforeSaveTest {
-    public BeforeSaveTest() {
+import com.google.gson.Gson;
+import org.fracturedatlas.athena.apa.exception.ApaException;
+import org.fracturedatlas.athena.client.PTicket;
+import org.fracturedatlas.athena.apa.exception.InvalidValueException;
+import org.fracturedatlas.athena.apa.model.IntegerTicketProp;
+import org.fracturedatlas.athena.apa.model.PropField;
+import org.fracturedatlas.athena.apa.model.PropValue;
+import org.fracturedatlas.athena.apa.model.StrictType;
+import org.fracturedatlas.athena.apa.model.StringTicketProp;
+import org.fracturedatlas.athena.apa.model.Ticket;
+import org.fracturedatlas.athena.apa.model.ValueType;
+import org.fracturedatlas.athena.web.util.BaseManagerCallbackTest;
+import org.fracturedatlas.athena.web.util.BaseManagerTest;
+import org.fracturedatlas.athena.web.util.JsonUtil;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
+public class BeforeSaveTest extends BaseManagerCallbackTest {
+    RecordManager manager;
+    Gson gson = JsonUtil.getGson();
+
+    public BeforeSaveTest() throws Exception {
+        super();
+        manager = (RecordManager)context.getBean("recordManager");
+    }
+
+    @After
+    public void tearDown() {
+        teardownTickets();
+    }
+
+    @Test
+    public void testMarkBooleanFieldStrict() throws Exception {
+        Ticket t = new Ticket();
+        t.setType("ticket");
+        ticketsToDelete.add(t);
+        PTicket pTicket = t.toClientTicket();
+        manager.saveTicketFromClientRequest("ticket", pTicket);
     }
 }

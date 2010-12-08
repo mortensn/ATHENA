@@ -1,0 +1,30 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+       
+			<bean id="callbacks" class="org.springframework.beans.factory.config.ListFactoryBean">
+        <property name="targetListClass">
+          <value>java.util.ArrayList</value>
+        </property>
+        <property name="sourceList">
+					<list>
+            <value>org.fracturedatlas.athena.web.manager.SampleCallbacks</value>
+					</list>
+				</property>
+			</bean>
+      
+    <bean id="recordManager" class="org.fracturedatlas.athena.web.manager.RecordManager" autowire="byName">
+      <property name="callbacks" ref="callbacks"/>
+    </bean>
+    <bean id="recordResource" class="org.fracturedatlas.athena.web.resource.RecordResource" autowire="byName"/>
+
+    <bean id="fieldResource" class="org.fracturedatlas.athena.web.resource.FieldResource" autowire="byName"/>
+    <bean id="propFieldManager" class="org.fracturedatlas.athena.web.manager.PropFieldManager" autowire="byName"/>
+</beans>
