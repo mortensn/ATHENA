@@ -1,5 +1,3 @@
-package org.fracturedatlas.athena.callback;
-
 /*
 
 ATHENA Project: Management Tools for the Cultural Sector
@@ -19,6 +17,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/
 
 */
+
+package org.fracturedatlas.athena.callback;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

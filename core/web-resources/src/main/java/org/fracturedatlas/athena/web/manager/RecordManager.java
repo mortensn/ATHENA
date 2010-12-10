@@ -20,10 +20,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/
 package org.fracturedatlas.athena.web.manager;
 
 import com.sun.jersey.api.NotFoundException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.text.CharacterIterator;
 import java.text.ParseException;
 import java.text.StringCharacterIterator;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -290,9 +293,40 @@ public class RecordManager {
         System.out.println("#");
         System.out.println("#");
         System.out.println("#");
-
+        
         for(String callback : callbacks) {
             System.out.println(callback);
+            try {
+                Class clazz = Class.forName(callback);
+            
+                if(!hasCorrectAnnotation(clazz)) {
+                    //They specified a callback that isn't annotated correctly.  Log this, and continue
+                    System.out.println("Class is not annotated correctly");
+                    continue;
+                }
+
+                List<Method> methods = Arrays.asList(clazz.getMethods());
+                for(Method m : methods) {
+                    if(m.isAnnotationPresent(org.fracturedatlas.athena.callback.BeforeSave.class)) {
+                        System.out.println("Found method: " + m.getName());
+                        Object callbackObj = clazz.newInstance();
+                        Object result = m.invoke(callbackObj);
+                    }
+                }
+
+            } catch (InstantiationException ie) {
+                //We couldn't construct an instance of the callback
+                ie.printStackTrace();
+            } catch (InvocationTargetException ite) {
+                //The annotated method has the wrong access qualifies (it's private)
+                ite.printStackTrace();
+            } catch (IllegalAccessException iae) {
+                //The annotated method has the wrong access qualifies (it's private)
+                iae.printStackTrace();
+            } catch (ClassNotFoundException cnfe) {
+                //log something sensible.  Mention that the callback class was not found.  We can still continue, though
+                cnfe.printStackTrace();
+            }
         }
 
         System.out.println("#");
@@ -308,6 +342,15 @@ public class RecordManager {
         System.out.println("#");
         System.out.println("#");
         System.out.println("############################################");
+    }
+
+    /**
+     * This method is not null-safe and will explode if you pass it null.
+     * @param clazz the class to check for AthenaCallback
+     * @return true if clazz is annotatied with AthenaCallback
+     */
+    private Boolean hasCorrectAnnotation(Class clazz) {
+        return clazz.isAnnotationPresent(org.fracturedatlas.athena.callback.AthenaCallback.class);
     }
 
     /**

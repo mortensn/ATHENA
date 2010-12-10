@@ -8,20 +8,20 @@
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
        http://www.springframework.org/schema/tx
        http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
-       
-			<bean id="callbacks" class="org.springframework.beans.factory.config.ListFactoryBean">
+
+    <bean id="callbacks" class="org.springframework.beans.factory.config.ListFactoryBean">
         <property name="targetListClass">
-          <value>java.util.ArrayList</value>
+            <value>java.util.ArrayList</value>
         </property>
         <property name="sourceList">
-					<list>
-            <value>org.fracturedatlas.athena.web.manager.SampleCallbacks</value>
-					</list>
-				</property>
-			</bean>
-      
+            <list>
+                <value>org.fracturedatlas.athena.web.manager.SampleCallbacks</value>
+            </list>
+        </property>
+    </bean>
+
     <bean id="recordManager" class="org.fracturedatlas.athena.web.manager.RecordManager" autowire="byName">
-      <property name="callbacks" ref="callbacks"/>
+        <property name="callbacks" ref="callbacks"/>
     </bean>
     <bean id="recordResource" class="org.fracturedatlas.athena.web.resource.RecordResource" autowire="byName"/>
 
