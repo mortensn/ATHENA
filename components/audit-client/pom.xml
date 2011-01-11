@@ -23,13 +23,7 @@
     <dependencies>
 
 
-        <dependency>
-            <groupId>org.fracturedatlas.athena</groupId>
-            <artifactId>sdk</artifactId>
-            <version>0.4-SNAPSHOT</version>
-            <type>pom</type>
-        </dependency>
-
+ 
         <dependency>
             <groupId>cglib</groupId>
             <artifactId>cglib-nodep</artifactId>
@@ -38,7 +32,7 @@
 
         <!-- JERSEY -->
 
-        <dependency>
+         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-server</artifactId>
             <version>${jersey-version}</version>
@@ -52,7 +46,6 @@
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-client</artifactId>
             <version>${jersey-version}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.sun.jersey.contribs</groupId>
@@ -107,27 +100,22 @@
             <artifactId>jackson-xc</artifactId>
             <version>1.5.3</version>
         </dependency>
-        <!-- JPA -->
 
-        <dependency>
-            <groupId>javax.persistence</groupId>
-            <artifactId>persistence-api</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-        <!-- HIBERNATE -->
-
- 
-        <dependency>
-            <groupId>javassist</groupId>
-            <artifactId>javassist</artifactId>
-            <version>3.8.0.GA</version>
+       <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.6.0</version>
         </dependency>
         <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-proxool</artifactId>
-            <version>3.3.2.GA</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.6.0</version>
         </dependency>
+       <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.14</version>
+       </dependency>
         <!-- DO NOT FEED THE BEARS -->
         <dependency>
             <groupId>com.sun.grizzly</groupId>

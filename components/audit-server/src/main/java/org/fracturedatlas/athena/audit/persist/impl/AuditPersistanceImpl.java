@@ -59,6 +59,7 @@ public class AuditPersistanceImpl implements AuditPersistance {
     public AuditMessage saveAuditMessage(AuditMessage am) throws Exception  {
         EntityManager em = this.emf.createEntityManager();
         try {
+            logger.error("got here3 " + am.toString());
             em.getTransaction().begin();
             am.setId(LongUserType.massageToLong(am.getId()));
             am = (AuditMessage) em.merge(am);

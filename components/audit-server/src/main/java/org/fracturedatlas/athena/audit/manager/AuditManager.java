@@ -31,6 +31,8 @@ import org.fracturedatlas.athena.audit.persist.AuditPersistance;
 import org.fracturedatlas.athena.client.audit.PublicAuditMessage;
 import org.fracturedatlas.athena.search.AthenaSearch;
 import org.fracturedatlas.athena.search.Operator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -41,9 +43,14 @@ public class AuditManager {
     @Autowired
     AuditPersistance auditPersistance;
 
+    Logger logger = LoggerFactory.getLogger(this.getClass().getName());
+
+
     public PublicAuditMessage saveAuditMessage(PublicAuditMessage auditMessage) throws Exception {
         AuditMessage am = new AuditMessage(auditMessage);
+        logger.error("Got here2 " + am.toString());
         am = auditPersistance.saveAuditMessage(am);
+        logger.error("Got here4 " + am.toString());
         return am.toPublicMessage();
     }
 

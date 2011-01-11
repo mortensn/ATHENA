@@ -12,7 +12,7 @@
   <context:annotation-config />
 
   <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalEntityManagerFactoryBean">
-    <property name="persistenceUnitName" value="athena"/>
+    <property name="persistenceUnitName" value="audit"/>
   </bean>
 
   <bean id="auditPersistance" class="org.fracturedatlas.athena.audit.persist.impl.AuditPersistanceImpl">

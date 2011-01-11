@@ -69,7 +69,10 @@ public class AuditResource {
     public PublicAuditMessage saveAuditMessage(String json) throws Exception {
         try {
             PublicAuditMessage auditMessage = gson.fromJson(json, PublicAuditMessage.class);
-            return auditManager.saveAuditMessage(auditMessage);
+            logger.error("Got here " + json);
+            auditMessage = auditManager.saveAuditMessage(auditMessage);
+            logger.error("Got here5 " + auditMessage.toString());
+            return auditMessage;
          } catch (Exception ex) {
             logger.error(ex.getMessage(),ex);
             throw ex;

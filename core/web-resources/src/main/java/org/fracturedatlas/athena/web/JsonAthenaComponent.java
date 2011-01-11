@@ -30,7 +30,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import org.fracturedatlas.athena.client.AthenaComponent;
 import org.fracturedatlas.athena.client.PTicket;
-import org.fracturedatlas.athena.client.audit.PublicAuditMessage;
 import org.fracturedatlas.athena.search.AthenaSearch;
 import org.fracturedatlas.athena.search.AthenaSearchConstraint;
 import org.fracturedatlas.athena.web.util.JsonUtil;
@@ -133,20 +132,7 @@ public class JsonAthenaComponent implements AthenaComponent {
         throw new UnsupportedOperationException("Invoke is not allowed on Json components");
     }
 
-    @Override
-    public PublicAuditMessage recordRequest(PublicAuditMessage auditMessage) {
-        component = c.resource(uri);
-
-        String jsonResponse;
-        String path = "audit/";
-        String recordJson = gson.toJson(auditMessage);
-        jsonResponse = component.path(path)
-                                    .type("application/json")
-                                    .post(String.class, recordJson);
-
-        return gson.fromJson(jsonResponse, PublicAuditMessage.class);
-
-    }
+ 
 
  
 }
