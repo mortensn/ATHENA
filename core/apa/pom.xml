@@ -27,10 +27,6 @@
             <groupId>org.fracturedatlas.athena</groupId>
             <artifactId>client</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.fracturedatlas.athena</groupId>
-            <artifactId>audit</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>cglib</groupId>

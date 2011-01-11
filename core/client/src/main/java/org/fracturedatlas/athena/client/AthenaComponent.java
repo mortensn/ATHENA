@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/
 package org.fracturedatlas.athena.client;
 
 import java.util.Collection;
+import org.fracturedatlas.athena.client.audit.PublicAuditMessage;
 import org.fracturedatlas.athena.search.AthenaSearch;
 
 /**
@@ -61,4 +62,6 @@ public interface AthenaComponent {
      * @return the result of the method
      */
     public PTicket invoke(String method, String type, PTicket record);
+
+    public PublicAuditMessage recordRequest(PublicAuditMessage pam);
 }

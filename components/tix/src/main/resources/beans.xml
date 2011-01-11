@@ -14,7 +14,16 @@
         <constructor-arg index="1" value="8888"/>
         <constructor-arg index="2" value="stage"/>
     </bean>
-    
+
+     <bean name="athenaAudit" class="org.fracturedatlas.athena.web.JsonAthenaComponent" autowire="autodetect">
+        <constructor-arg index="0" value="localhost"/>
+        <constructor-arg index="1" value="8080"/>
+        <constructor-arg index="2" value="audit"/>
+    </bean>
+
+
+    <bean id="auditFilter" class="org.fracturedatlas.athena.filter.AuditFilter" autowire="autodetect"/>
+
   <bean id="recordManager" class="org.fracturedatlas.athena.web.manager.RecordManager" autowire="autodetect"/>
   <bean id="recordResource" class="org.fracturedatlas.athena.web.resource.RecordResource" autowire="autodetect"/>
 

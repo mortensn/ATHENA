@@ -14,6 +14,16 @@
         <constructor-arg index="2" value="n8xrkpmvkdmgxqgc"/>
         <constructor-arg index="3" value="6gnq5wzg79rtbq4v"/>
     </bean>
+
+    <bean name="athenaAudit" class="org.fracturedatlas.athena.web.JsonAthenaComponent" autowire="autodetect">
+        <constructor-arg index="0" value="localhost"/>
+        <constructor-arg index="1" value="8080"/>
+        <constructor-arg index="2" value="audit"/>
+    </bean>
+
+ 
+    <bean id="auditFilter" class="org.fracturedatlas.athena.filter.AuditFilter" autowire="autodetect"/>
+
     <bean id="transactionsManager" class="org.fracturedatlas.athena.payments.manager.TransactionsManager" autowire="autodetect"/>
     <bean id="transactionsResource" class="org.fracturedatlas.athena.payments.web.resource.TransactionsResource" autowire="autodetect"/>
     <bean id="customersManager" class="org.fracturedatlas.athena.payments.manager.CustomersManager" autowire="autodetect"/>
