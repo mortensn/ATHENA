@@ -20,10 +20,12 @@ import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.Properties;
 import org.fracturedatlas.athena.client.audit.PublicAuditMessage;
 import org.fracturedatlas.athena.web.util.JsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
 
 
 /**
@@ -34,24 +36,35 @@ import org.slf4j.LoggerFactory;
 public class AuditFilter implements ContainerRequestFilter {
 
     private FilterConfig filterConfig = null;
- //   @Autowired
-    private String hostname ="localhost";
-    private String port = "8080";
-    private String componentName = "audit";
-
-    WebResource component;
-    Client c;
+    private static Properties props;
+    private static WebResource component;
     Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     Gson gson = JsonUtil.getGson();
-    String uri = "http://" + hostname + ":" + port + "/" + componentName + "/";
+    static String uri = null;
+
+
+     static {
+         props = new Properties();
+         ClassPathResource cpr = new ClassPathResource("athena-audit.properties");
+         try{
+             InputStream in = cpr.getInputStream();
+             props.load(in);
+             in.close();
+             uri = "http://" + props.getProperty("audit.hostname") + ":" + props.getProperty("audit.port") + "/" + props.getProperty("audit.componentName") + "/";
+             ClientConfig cc = new DefaultClientConfig();
+             Client c = Client.create(cc);
+             component = c.resource(uri);
+
+         } catch (Exception e) {
+             Logger log2 = LoggerFactory.getLogger(AuditFilter.class);
+             log2.error(e.getMessage(),e);
+         }
+     }
 
     public void init(FilterConfig filterConfig)
             throws ServletException {
         this.filterConfig = filterConfig;
-        
-        
-
     }
 
     public void destroy() {
@@ -71,7 +84,7 @@ public class AuditFilter implements ContainerRequestFilter {
             String resource = request.getLocalAddr() + ":" + request.getLocalPort();
             //Message
             BufferedReader bf = request.getReader();
-            StringBuffer message = new StringBuffer();
+            StringBuilder message = new StringBuilder();
             while (bf.ready()) {
                 message.append(bf.readLine());
             }
@@ -85,7 +98,7 @@ public class AuditFilter implements ContainerRequestFilter {
             component.path(path).type("application/json")
                                 .post(String.class, recordJson);
 
- 
+
         } catch (Exception ex) {
             logger.error(ex.getMessage(),ex);
         }
@@ -107,7 +120,7 @@ public class AuditFilter implements ContainerRequestFilter {
             logger.debug(request.getQueryParameters().toString());
             logger.debug(request.getFormParameters().toString());
             logger.debug(request.getRequestUri().toString());
-            logger.debug(request.CONTENT_ENCODING);
+            logger.debug(ContainerRequest.CONTENT_ENCODING);
             String action = request.getMethod() + request.getAbsolutePath();
             //Resource
             String resource = request.getBaseUri()  + ":" + request.getPath();
@@ -124,26 +137,14 @@ public class AuditFilter implements ContainerRequestFilter {
                 }
             } while (read>=0);
             String message = out.toString();
-            //DateTime
-            Long dateTime = System.currentTimeMillis();
-
-            if (component==null) {
-                ClientConfig cc = new DefaultClientConfig();
-                c = Client.create(cc);
-                component = c.resource(uri);
-            }
             PublicAuditMessage pam = new PublicAuditMessage(user, action, resource, message.toString());
-            String jsonResponse;
             String path = "audit/";
             String recordJson = gson.toJson(pam);
             component.path(path).type("application/json")
                                 .post(String.class, recordJson);
-
-
-  
         } catch (Exception ex) {
             logger.error(ex.getMessage(),ex);
         }
-               return request;
+        return request;
     }
 }

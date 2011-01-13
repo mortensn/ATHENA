@@ -48,9 +48,7 @@ public class AuditManager {
 
     public PublicAuditMessage saveAuditMessage(PublicAuditMessage auditMessage) throws Exception {
         AuditMessage am = new AuditMessage(auditMessage);
-        logger.error("Got here2 " + am.toString());
         am = auditPersistance.saveAuditMessage(am);
-        logger.error("Got here4 " + am.toString());
         return am.toPublicMessage();
     }
 

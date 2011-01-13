@@ -52,14 +52,12 @@ public class AuditPersistanceImpl implements AuditPersistance {
     @PersistenceUnit
     public void setEntityManagerFactory(EntityManagerFactory emf) {
         this.emf = emf;
-        System.out.println("emf is " + emf);
     }
     
     @Override
     public AuditMessage saveAuditMessage(AuditMessage am) throws Exception  {
         EntityManager em = this.emf.createEntityManager();
         try {
-            logger.error("got here3 " + am.toString());
             em.getTransaction().begin();
             am.setId(LongUserType.massageToLong(am.getId()));
             am = (AuditMessage) em.merge(am);
@@ -122,13 +120,16 @@ public class AuditPersistanceImpl implements AuditPersistance {
             while (searchListItr.hasNext()) {
                 apc = searchListItr.next();
                 name = apc.getParameter();
-                operator = apc.getOper();
+                operator = apc.getOper(); 
                 value = apc.getValueSet();
                 if (value.size() > 1) {
                     it = value.iterator();
                     while (it.hasNext()) {
                         singleValue = it.next();
                         //check if name is valid
+                        if(AuditMessage.Variable.toVariable(name) == AuditMessage.Variable.NOVALUE) {
+                            throw new Exception("Name " + name + " in audit message is invalid");
+                        }
                         queryString = queryString + "am." + name + operator.getOperatorString() + i;
                         namesTable.put("value" + i, name);
                         valuesTable.put("value" + i, singleValue);
