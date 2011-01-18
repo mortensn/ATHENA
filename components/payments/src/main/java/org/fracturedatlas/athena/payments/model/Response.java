@@ -21,6 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/
 package org.fracturedatlas.athena.payments.model;
 
 import java.math.BigDecimal;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 
 
 public class Response {
@@ -147,5 +149,19 @@ public class Response {
         hash = 37 * hash + (this.creditCard != null ? this.creditCard.hashCode() : 0);
         hash = 37 * hash + (this.customer != null ? this.customer.hashCode() : 0);
         return hash;
+    }
+
+        String toEscapedString() {
+        ToStringBuilder builder = new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE);
+
+        return builder.append(success)
+                .append(transactionId)
+                .append(status)
+                .append(message)
+                .append(code)
+                .append(amount)
+                .append(creditCard.toEscapedString())
+                .append(customer).toString();
+
     }
 }

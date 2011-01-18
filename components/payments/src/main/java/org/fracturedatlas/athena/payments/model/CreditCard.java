@@ -142,4 +142,12 @@ public class CreditCard {
         ToStringBuilder builder = new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE);
         return builder.append(id).append(cardNumber).append(expirationDate).append(cardholderName).append(token).toString();
     }
+
+
+    public String toEscapedString() {
+        ToStringBuilder builder = new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE);
+
+        return builder.append(id).append("******"+cardNumber.substring((cardNumber.length()<4 ? cardNumber.length() : cardNumber.length()-4))).append(expirationDate).append(cardholderName).append(token).toString();
+    }
+
 }

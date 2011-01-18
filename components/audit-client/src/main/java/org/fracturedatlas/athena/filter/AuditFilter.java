@@ -15,7 +15,8 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import com.google.gson.Gson;
-import com.sun.jersey.api.client.*;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import java.io.InputStreamReader;
@@ -35,13 +36,13 @@ import org.springframework.core.io.ClassPathResource;
 //@Component
 public class AuditFilter implements ContainerRequestFilter {
 
-    private FilterConfig filterConfig = null;
-    private static Properties props;
-    private static WebResource component;
-    Logger logger = LoggerFactory.getLogger(this.getClass().getName());
+    protected FilterConfig filterConfig = null;
+    protected static Properties props;
+    protected static WebResource component;
+    protected Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
-    Gson gson = JsonUtil.getGson();
-    static String uri = null;
+    protected Gson gson = JsonUtil.getGson();
+    protected static String uri = null;
 
 
      static {
@@ -121,9 +122,9 @@ public class AuditFilter implements ContainerRequestFilter {
             logger.debug(request.getFormParameters().toString());
             logger.debug(request.getRequestUri().toString());
             logger.debug(ContainerRequest.CONTENT_ENCODING);
-            String action = request.getMethod() + request.getAbsolutePath();
+            String action = request.getMethod();
             //Resource
-            String resource = request.getBaseUri()  + ":" + request.getPath();
+            String resource = request.getRequestUri().toString();
             //Message
             InputStream is = request.getEntityInputStream();
             final char[] buffer = new char[0x10000];
