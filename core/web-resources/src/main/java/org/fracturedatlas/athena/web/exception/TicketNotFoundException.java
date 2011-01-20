@@ -24,8 +24,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 @Provider
-public class TicketNotFoundException extends Exception
-                                     implements ExceptionMapper<TicketNotFoundException> {
+public class TicketNotFoundException extends Exception {
 
     public TicketNotFoundException(String message) {
         super(message);
@@ -35,10 +34,14 @@ public class TicketNotFoundException extends Exception
         super(message, cause);
     }
 
-    public Response toResponse(TicketNotFoundException ex) {
-        return Response.status(Response.Status.BAD_REQUEST).
-                entity(ex.getMessage()).
-                type("text/plain").
-                build();
+    @Provider
+    public class TicketNotFoundExceptionMapper implements ExceptionMapper<TicketNotFoundException> {
+
+        public Response toResponse(TicketNotFoundException ex) {
+            return Response.status(Response.Status.BAD_REQUEST).
+                    entity(ex.getMessage()).
+                    type("text/plain").
+                    build();
+        }
     }
 }

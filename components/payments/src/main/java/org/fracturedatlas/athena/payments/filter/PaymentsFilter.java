@@ -42,7 +42,6 @@ public class PaymentsFilter extends AuditFilter {
                 }
             } while (read >= 0);
             String message = out.toString();
-
             if (action.equalsIgnoreCase("POST") || action.equalsIgnoreCase("PUT")) {
                 //find out the resource contacted
                 if (resource.indexOf("/customers/") > -1) {
@@ -56,7 +55,7 @@ public class PaymentsFilter extends AuditFilter {
                     message = paymentDetails.toEscapedString();
                 }
             }
-            pam = new PublicAuditMessage(user, action, resource, message.toString());
+            pam = new PublicAuditMessage(user, action, resource, message);
             String path = "audit/";
             String recordJson = gson.toJson(pam);
             component.path(path).type("application/json").post(String.class, recordJson);

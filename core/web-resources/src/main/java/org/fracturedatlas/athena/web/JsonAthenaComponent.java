@@ -16,23 +16,29 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/
 
-*/
-
+ */
 package org.fracturedatlas.athena.web;
 
 import com.google.gson.Gson;
 import com.sun.jersey.api.client.*;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.sun.jersey.api.client.filter.*;
+import com.sun.jersey.api.client.filter.HTTPDigestAuthFilter;
 import com.sun.jersey.core.impl.provider.entity.Inflector;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Map;
 import org.fracturedatlas.athena.client.AthenaComponent;
 import org.fracturedatlas.athena.client.PTicket;
 import org.fracturedatlas.athena.search.AthenaSearch;
 import org.fracturedatlas.athena.search.AthenaSearchConstraint;
 import org.fracturedatlas.athena.web.util.JsonUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolderStrategy;
+import org.springframework.security.core.userdetails.User;
 
 /**
  * Implementation of AthenaComponent so that components can talk to other components over HTTP
@@ -42,16 +48,28 @@ public class JsonAthenaComponent implements AthenaComponent {
     WebResource component;
     Client c;
     String uri;
-
+    Map<String, String> credentials;
+    SecurityContextHolderStrategy contextHolderStrategy;
+    Logger logger = LoggerFactory.getLogger(this.getClass().getName());
     Gson gson = JsonUtil.getGson();
 
-    public JsonAthenaComponent(String hostname, String port, String componentName) {
-        
+    public JsonAthenaComponent(String hostname, String port, String componentName, SecurityContextHolderStrategy contextHolderStrategy) {
+
         //TODO: Use a URL builder
         uri = "http://" + hostname + ":" + port + "/" + componentName + "/";
 
         ClientConfig cc = new DefaultClientConfig();
         c = Client.create(cc);
+        this.contextHolderStrategy = contextHolderStrategy;
+    }
+
+    /**
+     * The credentials for Digest autnetication
+     *
+     * @param credentials a Map of credentials with the keys "username" and "password"
+     */
+    public void addCredentials(Map<String, String> credentials) {
+        this.credentials = credentials;
     }
 
     /**
@@ -63,10 +81,17 @@ public class JsonAthenaComponent implements AthenaComponent {
      */
     public PTicket get(String type, Object id) {
 
-        //TODO: needs to be cleaned up.  No need for this to create a new
+        //TODO: needs to be cleaned up.  No need for t
+        //TODO: This needs to go on when we enable securityhis to create a new
         //resource every time
+//        SecurityContext securityContext = this.contextHolderStrategy.getContext();
+//        Authentication authentication = securityContext.getAuthentication();
+//        User user = (User) authentication.getPrincipal();
+//        String username = user.getUsername();
+//        String password = user.getPassword();
+//        c.addFilter(new HTTPDigestAuthFilter(username,password));
         component = c.resource(uri);
-        
+
         type = Inflector.getInstance().pluralize(type);
         String json = component.path(type + "/" + id).get(String.class);
         return gson.fromJson(json, PTicket.class);
@@ -90,16 +115,12 @@ public class JsonAthenaComponent implements AthenaComponent {
         String path = type;
         String recordJson = gson.toJson(record);
 
-        if(record.getId() != null) {
+        if (record.getId() != null) {
             path = "/" + type + "/" + record.getId();
-            jsonResponse = component.path(path)
-                                    .type("application/json")
-                                    .put(String.class, recordJson);
+            jsonResponse = component.path(path).type("application/json").put(String.class, recordJson);
         } else {
             path = "/" + type;
-            jsonResponse = component.path(path)
-                                    .type("application/json")
-                                    .post(String.class, recordJson);
+            jsonResponse = component.path(path).type("application/json").post(String.class, recordJson);
         }
 
         return gson.fromJson(jsonResponse, PTicket.class);
@@ -118,7 +139,7 @@ public class JsonAthenaComponent implements AthenaComponent {
         type = Inflector.getInstance().pluralize(type);
         component = component.path(type + "/");
 
-        for(AthenaSearchConstraint con : athenaSearch.getConstraints()) {
+        for (AthenaSearchConstraint con : athenaSearch.getConstraints()) {
             String val = con.getOper().getOperatorType() + con.getValue();
             component = component.queryParam(con.getParameter(), val);
         }

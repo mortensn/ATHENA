@@ -41,7 +41,7 @@
         </resources>
     </build>
     <properties>
-        <jersey-version>1.2</jersey-version>
+        <jersey-version>1.4</jersey-version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
@@ -82,6 +82,11 @@
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-client</artifactId>
+            <version>${jersey-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-bundle</artifactId>
             <version>${jersey-version}</version>
         </dependency>
         <dependency>
