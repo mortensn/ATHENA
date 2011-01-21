@@ -19,6 +19,9 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
+import com.sun.jersey.core.util.ReaderWriter;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Properties;
@@ -27,7 +30,6 @@ import org.fracturedatlas.athena.web.util.JsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
-
 
 /**
  *
@@ -40,28 +42,26 @@ public class AuditFilter implements ContainerRequestFilter {
     protected static Properties props;
     protected static WebResource component;
     protected Logger logger = LoggerFactory.getLogger(this.getClass().getName());
-
     protected Gson gson = JsonUtil.getGson();
     protected static String uri = null;
 
+    static {
+        props = new Properties();
+        ClassPathResource cpr = new ClassPathResource("athena-audit.properties");
+        try {
+            InputStream in = cpr.getInputStream();
+            props.load(in);
+            in.close();
+            uri = "http://" + props.getProperty("audit.hostname") + ":" + props.getProperty("audit.port") + "/" + props.getProperty("audit.componentName") + "/";
+            ClientConfig cc = new DefaultClientConfig();
+            Client c = Client.create(cc);
+            component = c.resource(uri);
 
-     static {
-         props = new Properties();
-         ClassPathResource cpr = new ClassPathResource("athena-audit.properties");
-         try{
-             InputStream in = cpr.getInputStream();
-             props.load(in);
-             in.close();
-             uri = "http://" + props.getProperty("audit.hostname") + ":" + props.getProperty("audit.port") + "/" + props.getProperty("audit.componentName") + "/";
-             ClientConfig cc = new DefaultClientConfig();
-             Client c = Client.create(cc);
-             component = c.resource(uri);
-
-         } catch (Exception e) {
-             Logger log2 = LoggerFactory.getLogger(AuditFilter.class);
-             log2.error(e.getMessage(),e);
-         }
-     }
+        } catch (Exception e) {
+            Logger log2 = LoggerFactory.getLogger(AuditFilter.class);
+            log2.error(e.getMessage(), e);
+        }
+    }
 
     public void init(FilterConfig filterConfig)
             throws ServletException {
@@ -75,7 +75,7 @@ public class AuditFilter implements ContainerRequestFilter {
     public void doFilter(ServletRequest request,
             ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-       try {
+        try {
             String user = request.getRemoteAddr() + ":" + request.getRemotePort();
             //Action
             logger.debug(request.getAttributeNames().toString());
@@ -96,21 +96,20 @@ public class AuditFilter implements ContainerRequestFilter {
             String jsonResponse;
             String path = "audit/";
             String recordJson = gson.toJson(pam);
-            component.path(path).type("application/json")
-                                .post(String.class, recordJson);
+            component.path(path).type("application/json").post(String.class, recordJson);
 
 
         } catch (Exception ex) {
-            logger.error(ex.getMessage(),ex);
+            logger.error(ex.getMessage(), ex);
         }
         chain.doFilter(request, response);
     }
 
     @Override
     public ContainerRequest filter(ContainerRequest request) {
-               try {
+        try {
 
-            String user = request.getUserPrincipal() + ":" ;
+            String user = request.getUserPrincipal() + ":";
             //Action
             logger.debug(request.getRequestHeaders().toString());
             logger.debug(request.toString());
@@ -126,25 +125,18 @@ public class AuditFilter implements ContainerRequestFilter {
             //Resource
             String resource = request.getRequestUri().toString();
             //Message
-            InputStream is = request.getEntityInputStream();
-            final char[] buffer = new char[0x10000];
-            StringBuilder out = new StringBuilder();
-            Reader in = new InputStreamReader(is, "UTF-8");
-            int read;
-            do {
-                read = in.read(buffer, 0, buffer.length);
-                if (read>0) {
-                    out.append(buffer, 0, read);
-                }
-            } while (read>=0);
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            InputStream in = request.getEntityInputStream();
+            ReaderWriter.writeTo(in, out);
+            byte[] requestEntity = out.toByteArray();
             String message = out.toString();
+            request.setEntityInputStream(new ByteArrayInputStream(requestEntity));
             PublicAuditMessage pam = new PublicAuditMessage(user, action, resource, message.toString());
             String path = "audit/";
             String recordJson = gson.toJson(pam);
-            component.path(path).type("application/json")
-                                .post(String.class, recordJson);
+            component.path(path).type("application/json").post(String.class, recordJson);
         } catch (Exception ex) {
-            logger.error(ex.getMessage(),ex);
+            logger.error(ex.getMessage(), ex);
         }
         return request;
     }
