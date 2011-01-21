@@ -30,31 +30,7 @@ public class PaymentsFilter extends AuditFilter {
             String user = request.getUserPrincipal() + ":";
             String action = request.getMethod();
             String resource = request.getRequestUri().toString();
-            InputStream is = request.getEntityInputStream();
-            final char[] buffer = new char[0x10000];
-            StringBuilder out = new StringBuilder();
-            Reader in = new InputStreamReader(is, "UTF-8");
-            int read;
-            do {
-                read = in.read(buffer, 0, buffer.length);
-                if (read > 0) {
-                    out.append(buffer, 0, read);
-                }
-            } while (read >= 0);
-            String message = out.toString();
-            if (action.equalsIgnoreCase("POST") || action.equalsIgnoreCase("PUT")) {
-                //find out the resource contacted
-                if (resource.indexOf("/customers/") > -1) {
-                    Customer customer = gson.fromJson(message, Customer.class);
-                    message = customer.toEscapedString();
-                } else if (resource.indexOf("/cards/") > -1) {
-                    CreditCard card = gson.fromJson(message, CreditCard.class);
-                    message = card.toEscapedString();
-                } else if (resource.indexOf("/transations/") > -1) {
-                    AuthorizationRequest paymentDetails = gson.fromJson(message, AuthorizationRequest.class);
-                    message = paymentDetails.toEscapedString();
-                }
-            }
+            String message = request.getEntity(String.class);
             pam = new PublicAuditMessage(user, action, resource, message);
             String path = "audit/";
             String recordJson = gson.toJson(pam);
